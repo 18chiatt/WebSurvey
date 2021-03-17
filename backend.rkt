@@ -51,21 +51,26 @@
     (let ([nextReq (send/suspend
    (lambda (where-to-send-next)
      (getxexpr "Your Answer:" where-to-send-next)))])
+      (redirect/get)
     (let ([num (extractString nextReq)])
+      
       (if num
         num
-        (display "massive error, not a string ??")))
-    ))
+        (getCustomAnswer)))
+    )
+  )
 
 (define (displayPrompt prompt )
   (let ([nextReq (send/suspend
    (lambda (where-to-send-next)
      (getxexpr prompt where-to-send-next)))])
+    (redirect/get)
     (let ([num (extractResponse nextReq)])
       (if num
         num
-        (display "massive error, not a number!")))
+        (displayPrompt prompt)))
     )
+  
   )
 
 

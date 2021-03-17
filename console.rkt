@@ -1,0 +1,77 @@
+#lang plait
+
+
+
+
+
+
+(define-type Question
+  (full (prompt : String) (respCount : Number) [numToResp :(Listof String)] (alternateKey : String ) (alternateQuestion : Question) (default : Question) (userSupplied? : Boolean) (rawQuestion : String))
+  (end))
+
+(define (printResponses list index needsOther?)
+  (type-case (Listof String) list
+    [(cons curr remaining) (begin (display index)
+                                  (display ". ")
+                                  (display curr)
+                                  (display "\n")
+                                  (printResponses remaining (+ 1 index) needsOther?))]
+    [empty (cond
+             [needsOther? (begin (display index)
+                  (display ". Other...\n")
+                  )]
+             [else (display "")])]))
+
+(define (printQuestion prompt respCount numToResp needsOther?)
+  (begin (display (string-append prompt "\n"))
+         (printResponses numToResp 1 needsOther?)))
+
+(define (extractAnswer respCount numToResp)
+  (let ([responseN (s-exp->number(read) )])
+    (cond
+      [(<= responseN respCount) (list-ref numToResp (- responseN 1))]
+      [else (s-exp->string (read))])))
+(define (printResults res)
+  (type-case (Listof String) res
+    [(cons curr remaining) (begin (printResults remaining)
+                                  (display curr)
+                                  (display "\n")
+                                  )]
+    [empty (display "") ]))
+
+(define (printResultsS res)
+  (begin (display "\nYour Answers\n\n")
+         (printResults res)))
+
+
+(define (survey question responses)
+  (type-case Question question
+    [(full prompt respCount numToResp alternateKey alternateQuestion default needsOther? rawQ)
+     (begin (printQuestion  prompt respCount numToResp needsOther?)
+            (let ([answer (extractAnswer respCount numToResp)])
+              (cond
+                [(equal? answer alternateKey ) (survey alternateQuestion (cons (string-append (string-append rawQ " " ) answer ) responses))]
+                [else (survey default (cons (string-append (string-append rawQ " " ) answer ) responses))])))]
+    [(end) (printResultsS responses)]))
+
+
+; (full (prompt : String) (respCount : Number) [numToResp :(Listof String)] (alternateKey : String ) (alternateQuestion : Question) (default : Question) )
+
+(define ending (end))
+(define question7 (full "To whom did Luke owe the most loyalty?" 4 (cons "his father" (cons "Obi Wan" (cons  "Han and Leia" (cons "Yoda" empty))))  "~~~~~~777" ending ending #t "To whom did Luke owe the most loyalty?"))
+(define question6 (full "What in-universe explanation for Luke’s loss of hope in the sequel trilogy is most plausible?" 4 (cons "the pressure of building a new Jedi Order" (cons "unresolved fears about the Dark Side" (cons  "disillusionment with the history of the Jedi Order" (cons "new knowledge about midichlorians" empty))))  "~~~~~~777" ending ending #t "What in-universe explanation for Luke’s loss of hope in the sequel trilogy is most plausible?"))
+(define question5 (full "Is Luke defined more by his hopefulness or his loyalty?" 2 (cons "his hopefulness" (cons "his loyalty" empty))  "his hopefulness" question6 question7 #f "Is Luke defined more by his hopefulness or his loyalty?"))
+(define question4 (full "What was the root cause of Anakin’s downfall?" 4 (cons "his abilities" (cons "his pride in his abilities" (cons  "his relationship with Padme" (cons "his attachment to temporary things" empty))))  "Anakin Skywalker" ending ending #t "What was the root cause of Anakin’s downfall?"))
+(define question3 (full "Whose arc do you find more satisfying?" 2 (cons "Anakin Skywalker" (cons "Luke Skywalker" empty))  "Anakin Skywalker" question4 question5 #f "Whose arc do you find more satisfying?") )
+(define question2 (full "I’m amazed (and delighted!) at your choice. What about it bothers you the least?" 3 (cons "the words the actors say" (cons "how they say them" (cons "something else" empty)))  "~~~~~7777" ending question3 #f "What about it bothers you the least?"))
+(define question1 (full "Which Star Wars trilogy is the best?" 3 (cons "The Original" (cons "The Prequel" (cons "The Sequel" empty)))  "The Prequel" question2 question3 #f "Which Star Wars trilogy is the best?"))
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,1 @@
+("7.9" racket ("5d6ba24ac13eb38fd583c3f383db419c95c40149" . "21217ca3ac06df7350b46b00488c30272d0b42b8") #"/home/ch692/Desktop/330/backend.rkt" (collects #"errortrace" #"errortrace-key.rkt") (collects #"plait" #"main.rkt") (collects #"racket" #"base.rkt") (collects #"racket" #"runtime-config.rkt") (collects #"racket" #"runtime-path.rkt"))
